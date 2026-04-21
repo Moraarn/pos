@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { CartItem, Product } from '@/types'
 
 interface CartStore {
@@ -21,7 +21,7 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (product: Product) => {
         set((state) => {
-          const existingItem = state.items.find((item: CartItem) => item.productId === product.id)
+          const existingItem = state.items.find(item => item.productId === product.id)
           
           if (existingItem) {
             // Check if adding one more would exceed stock
@@ -30,7 +30,7 @@ export const useCartStore = create<CartStore>()(
             }
             
             return {
-              items: state.items.map((item: CartItem) =>
+              items: state.items.map(item =>
                 item.productId === product.id
                   ? { ...item, quantity: item.quantity + 1 }
                   : item
@@ -56,7 +56,7 @@ export const useCartStore = create<CartStore>()(
 
       removeItem: (productId: string) => {
         set((state) => ({
-          items: state.items.filter((item: CartItem) => item.productId !== productId)
+          items: state.items.filter(item => item.productId !== productId)
         }))
       },
 
@@ -68,7 +68,7 @@ export const useCartStore = create<CartStore>()(
             item.productId === productId
               ? { ...item, quantity }
               : item
-          ).filter((item: CartItem) => item.quantity > 0) // Remove items with 0 quantity
+          ).filter(item => item.quantity > 0) // Remove items with 0 quantity
         }))
       },
 
