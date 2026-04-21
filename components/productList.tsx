@@ -47,10 +47,10 @@ export default function ProductList() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6" style={{ backgroundColor: 'var(--white)', borderColor: 'var(--gray-100)', boxShadow: 'var(--shadow-sm)' }}>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-800">Products</h2>
-        <span className="text-sm text-gray-400"> {PRODUCTS.length} items</span>
+        <h2 className="text-xl font-semibold text-gray-800" style={{ color: 'var(--gray-800)' }}>Products</h2>
+        <span className="text-sm text-gray-400" style={{ color: 'var(--gray-400)' }}> {PRODUCTS.length} items</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -64,29 +64,29 @@ export default function ProductList() {
           return (
             <div
               key={product.id}
-              className={`group relative flex flex-col rounded-2xl border transition-all duration-200 overflow-hidden ${
+              className={`group relative flex flex-col rounded-2xl border transition-all duration-300 ease-out overflow-hidden transform hover:scale-[1.02] hover:shadow-xl ${
                 outOfStock
                   ? 'border-gray-100 opacity-55 bg-gray-50'
                   : maxed
                   ? 'border-amber-200 bg-amber-50/30'
-                  : 'border-gray-100 bg-white hover:border-blue-200 hover:shadow-md'
+                  : 'border-gray-100 bg-white hover:border-blue-200 hover:shadow-lg'
               }`}
             >
               {/* In-cart badge */}
               {qty > 0 && (
-                <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm" style={{ backgroundColor: 'var(--blue-600)', color: 'var(--white)' }}>
                   <CheckCircle2 className="w-3 h-3" />
                   {qty} in cart
                 </div>
               )}
 
               {/* Image area */}
-              <div className="relative h-44 flex items-center justify-center bg-gray-50 px-6 pt-4 pb-2">
+              <div className="relative h-44 flex items-center justify-center bg-gray-50 px-6 pt-4 pb-2 overflow-hidden" style={{ backgroundColor: 'var(--gray-50)' }}>
                 {imageUrl ? (
                   <img
                     src={imageUrl}
                     alt={product.name}
-                    className="h-full w-full object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
+                    className="h-full w-full object-contain mix-blend-multiply transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-1"
                     onError={(e) => {
                       const img = e.currentTarget as HTMLImageElement
                       img.style.display = 'none'
@@ -98,20 +98,20 @@ export default function ProductList() {
                   />
                 ) : null}
                 <div
-                  className="absolute inset-0 flex items-center justify-center"
+                  className="absolute inset-0 flex items-center justify-center transition-opacity duration-300"
                   style={imageUrl ? { display: 'none' } : undefined}
                 >
-                  <Package className="w-12 h-12 text-gray-200" />
+                  <Package className="w-12 h-12 text-gray-200 transition-transform duration-300 group-hover:scale-110" style={{ color: 'var(--gray-200)' }} />
                 </div>
               </div>
 
               {/* Info */}
               <div className="flex flex-col flex-1 p-4 gap-3">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-800 text-sm leading-snug">
+                  <h3 className="font-semibold text-gray-800 text-sm leading-snug" style={{ color: 'var(--gray-800)' }}>
                     {product.name}
                   </h3>
-                  <p className="text-lg font-bold text-blue-600 mt-1">
+                  <p className="text-lg font-bold text-blue-600 mt-1" style={{ color: 'var(--blue-600)' }}>
                     KES {product.price.toLocaleString()}
                   </p>
                 </div>
@@ -119,16 +119,16 @@ export default function ProductList() {
                 {/* Stock indicator */}
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                    className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${
                       outOfStock
                         ? 'bg-red-400'
                         : maxed
                         ? 'bg-amber-400'
                         : 'bg-green-400'
-                    }`}
+                    } ${!outOfStock && !maxed ? 'animate-pulse' : ''}`}
                   />
                   <span
-                    className={`text-xs font-medium ${
+                    className={`text-xs font-medium transition-colors duration-200 ${
                       outOfStock
                         ? 'text-red-500'
                         : maxed
@@ -148,15 +148,16 @@ export default function ProductList() {
                 <button
                   onClick={() => handleAddToCart(product)}
                   disabled={!addable || outOfStock}
-                  className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-sm font-semibold transition-all ${
+                  className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-sm font-semibold transition-all duration-300 ease-out transform active:scale-95 ${
                     outOfStock
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       : maxed
                       ? 'bg-amber-100 text-amber-600 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98]'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5'
                   }`}
+                  style={!outOfStock && !maxed ? { backgroundColor: 'var(--blue-600)', color: 'var(--white)' } : {}}
                 >
-                  {!outOfStock && !maxed && <ShoppingCart className="w-4 h-4" />}
+                  {!outOfStock && !maxed && <ShoppingCart className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />}
                   {outOfStock ? 'Out of Stock' : maxed ? 'Max Stock' : 'Add to Cart'}
                 </button>
               </div>
@@ -167,13 +168,13 @@ export default function ProductList() {
 
       {/* Success Popup */}
       {showSuccess && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg shadow-lg px-4 py-3 animate-in slide-in-from-right duration-300">
-          <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
-            <Check className="w-4 h-4 text-green-600" />
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg shadow-lg px-4 py-3 animate-in slide-in-from-right duration-300 fade-in-0 zoom-in-95" style={{ backgroundColor: 'var(--green-50)', borderColor: 'var(--green-200)' }}>
+          <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full animate-bounce" style={{ backgroundColor: 'var(--green-100)' }}>
+            <Check className="w-4 h-4 text-green-600" style={{ color: 'var(--green-600)' }} />
           </div>
           <div>
-            <p className="font-medium text-green-800 text-sm">Added to cart!</p>
-            <p className="text-green-600 text-xs">{lastAddedProduct}</p>
+            <p className="font-medium text-green-800 text-sm" style={{ color: 'var(--green-800)' }}>Added to cart!</p>
+            <p className="text-green-600 text-xs" style={{ color: 'var(--green-600)' }}>{lastAddedProduct}</p>
           </div>
         </div>
       )}

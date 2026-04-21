@@ -31,26 +31,26 @@ export default function POSPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ backgroundColor: 'var(--gray-50)' }}>
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', borderBottomColor: 'var(--gray-100)', boxShadow: 'var(--shadow-sm)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-15 py-3">
 
             {/* Brand */}
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm">
-                <Zap className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm" style={{ backgroundColor: 'var(--blue-600)' }}>
+                <Zap className="w-4 h-4 text-white" style={{ color: 'var(--white)' }} />
               </div>
               <div>
-                <h1 className="text-sm font-bold text-gray-900 leading-none">SwiftPOS</h1>
-                <p className="text-[10px] text-gray-400 leading-none mt-0.5">Point of Sale</p>
+                <h1 className="text-sm font-bold text-gray-900 leading-none" style={{ color: 'var(--gray-900)' }}>SwiftPOS</h1>
+                <p className="text-[10px] text-gray-400 leading-none mt-0.5" style={{ color: 'var(--gray-400)' }}>Point of Sale</p>
               </div>
             </div>
 
             {/* Nav tabs */}
-            <nav className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
+            <nav className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl" style={{ backgroundColor: 'var(--gray-100)' }}>
               <button
                 onClick={() => setCurrentView('pos')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -74,7 +74,7 @@ export default function POSPage() {
                 <History className="w-4 h-4" />
                 Sales History
                 {sales.length > 0 && (
-                  <span className="ml-0.5 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                  <span className="ml-0.5 bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none" style={{ backgroundColor: 'var(--blue-600)', color: 'var(--white)' }}>
                     {sales.length}
                   </span>
                 )}
@@ -83,10 +83,10 @@ export default function POSPage() {
 
             {/* Right: date/time or store info */}
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-medium text-gray-700">
+              <p className="text-xs font-medium text-gray-700" style={{ color: 'var(--gray-700)' }}>
                 {new Date().toLocaleDateString('en-KE', { weekday: 'short', month: 'short', day: 'numeric' })}
               </p>
-              <p className="text-[10px] text-gray-400 mt-0.5">Nairobi, KE</p>
+              <p className="text-[10px] text-gray-400 mt-0.5" style={{ color: 'var(--gray-400)' }}>Nairobi, KE</p>
             </div>
 
           </div>
