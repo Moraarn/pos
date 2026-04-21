@@ -9,11 +9,6 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
-  turbopack: {
-    resolveAlias: {
-      '@': './',
-    },
-  },
 };
 
 export default nextConfig;
