@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import ProductList from '@/components/productList'
-import Cart from '@/components/cart'
-import Checkout from '@/components/checkout'
-import Receipt from '@/components/receipt'
-import SalesHistory from '@/components/salesHistory'
 import { useSalesStore } from '@/store/useSalesStore'
 import { Sale } from '@/types'
 import { ShoppingCart, History, Zap } from 'lucide-react'
+import Receipt from '@/components/Receipt'
+import SalesHistory from '@/components/SalesHistory'
+import Checkout from '@/components/Checkout'
+import ProductList from '@/components/ProductList'
+import Cart from '@/components/Cart'
 
 export default function POSPage() {
   const [currentView, setCurrentView] = useState<'pos' | 'history'>('pos')
