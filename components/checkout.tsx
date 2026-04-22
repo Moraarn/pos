@@ -149,9 +149,9 @@ export default function Checkout({ onSaleComplete }: CheckoutProps) {
           className={`w-full py-4 px-6 rounded-xl font-semibold text-base transition-all ${
             isProcessing
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
-              : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98] shadow-lg hover:shadow-xl'
+              : 'bg-green-600 text-white hover:bg-green-700 active:scale-[0.98] shadow-lg hover:shadow-xl'
           }`}
-          style={!isProcessing ? { backgroundColor: 'var(--blue-600)', color: 'var(--white)' } : {}}
+          style={!isProcessing ? { backgroundColor: 'var(--green-600)', color: 'var(--white)' } : {}}
         >
           {isProcessing ? (
             <div className="flex items-center justify-center gap-2">
