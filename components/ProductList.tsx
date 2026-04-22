@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { Product } from '@/types'
 import { useCartStore } from '@/store/useCartStore'
-import { ShoppingCart, CheckCircle2, Package, Check } from 'lucide-react'
+import { ShoppingCart, CheckCircle2, Package, Plus } from 'lucide-react'
 
 const PRODUCTS: Product[] = [
   { id: "1", name: "iPhone 13", price: 80000, stock: 10 },
@@ -28,156 +28,176 @@ const PRODUCT_IMAGES: Record<string, string> = {
 }
 
 export default function ProductList() {
-  const [showSuccess, setShowSuccess] = useState(false)
-  const [lastAddedProduct, setLastAddedProduct] = useState<string>('')
-  
+  const [justAdded, setJustAdded] = useState<string | null>(null)
   const { addItem, items } = useCartStore()
 
   const getCartQty = (productId: string) =>
     items.find((i) => i.productId === productId)?.quantity ?? 0
 
-  const canAdd = (product: Product) =>
-    getCartQty(product.id) < product.stock
+  const canAdd = (product: Product) => getCartQty(product.id) < product.stock
 
-  const handleAddToCart = (product: Product) => {
+  const handleAdd = (product: Product) => {
     addItem(product)
-    setLastAddedProduct(product.name)
-    setShowSuccess(true)
-    setTimeout(() => setShowSuccess(false), 2000)
+    setJustAdded(product.id)
+    setTimeout(() => setJustAdded(null), 1200)
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6" style={{ backgroundColor: 'var(--white)', borderColor: 'var(--gray-100)', boxShadow: 'var(--shadow-sm)' }}>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-800" style={{ color: 'var(--gray-800)' }}>Products</h2>
-        <span className="text-sm text-gray-400" style={{ color: 'var(--gray-400)' }}> {PRODUCTS.length} items</span>
-      </div>
+    <>
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+          0%   { transform: scale(0.85); opacity: 0; }
+          60%  { transform: scale(1.08); }
+          100% { transform: scale(1);    opacity: 1; }
+        }
+        @keyframes shimmer {
+          0%   { background-position: -200% center; }
+          100% { background-position:  200% center; }
+        }
+        .card-enter { animation: fadeSlideIn 0.35s ease both; }
+        .badge-pop  { animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1) both; }
+        .img-hover  { transition: transform 0.4s cubic-bezier(.34,1.2,.64,1); }
+        .card:hover .img-hover { transform: scale(1.07) translateY(-3px); }
+        .btn-add    { transition: background 0.2s, box-shadow 0.2s, transform 0.15s; }
+        .btn-add:active { transform: scale(0.96); }
+      `}</style>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {PRODUCTS.map((product) => {
-          const qty = getCartQty(product.id)
-          const addable = canAdd(product)
-          const outOfStock = product.stock === 0
-          const maxed = !addable && !outOfStock
-          const imageUrl = PRODUCT_IMAGES[product.id]
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
 
-          return (
-            <div
-              key={product.id}
-              className={`group relative flex flex-col rounded-2xl border transition-all duration-300 ease-out overflow-hidden transform hover:scale-[1.02] hover:shadow-xl ${
-                outOfStock
-                  ? 'border-gray-100 opacity-55 bg-gray-50'
-                  : maxed
-                  ? 'border-amber-200 bg-amber-50/30'
-                  : 'border-gray-100 bg-white hover:border-blue-200 hover:shadow-lg'
-              }`}
-            >
-              {/* In-cart badge */}
-              {qty > 0 && (
-                <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm" style={{ backgroundColor: 'var(--blue-600)', color: 'var(--white)' }}>
-                  <CheckCircle2 className="w-3 h-3" />
-                  {qty} in cart
-                </div>
-              )}
-
-              {/* Image area */}
-              <div className="relative h-44 flex items-center justify-center bg-gray-50 px-6 pt-4 pb-2 overflow-hidden" style={{ backgroundColor: 'var(--gray-50)' }}>
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={product.name}
-                    className="h-full w-full object-contain mix-blend-multiply transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-1"
-                    onError={(e) => {
-                      const img = e.currentTarget as HTMLImageElement
-                      img.style.display = 'none'
-                      const nextElement = img.nextElementSibling as HTMLElement
-                      if (nextElement) {
-                        nextElement.removeAttribute('style')
-                      }
-                    }}
-                  />
-                ) : null}
-                <div
-                  className="absolute inset-0 flex items-center justify-center transition-opacity duration-300"
-                  style={imageUrl ? { display: 'none' } : undefined}
-                >
-                  <Package className="w-12 h-12 text-gray-200 transition-transform duration-300 group-hover:scale-110" style={{ color: 'var(--gray-200)' }} />
-                </div>
-              </div>
-
-              {/* Info */}
-              <div className="flex flex-col flex-1 p-4 gap-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-800 text-sm leading-snug" style={{ color: 'var(--gray-800)' }}>
-                    {product.name}
-                  </h3>
-                  <p className="text-lg font-bold text-blue-600 mt-1" style={{ color: 'var(--blue-600)' }}>
-                    KES {product.price.toLocaleString()}
-                  </p>
-                </div>
-
-                {/* Stock indicator */}
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-300 ${
-                      outOfStock
-                        ? 'bg-red-400'
-                        : maxed
-                        ? 'bg-amber-400'
-                        : 'bg-green-400'
-                    } ${!outOfStock && !maxed ? 'animate-pulse' : ''}`}
-                  />
-                  <span
-                    className={`text-xs font-medium transition-colors duration-200 ${
-                      outOfStock
-                        ? 'text-red-500'
-                        : maxed
-                        ? 'text-amber-600'
-                        : 'text-gray-400'
-                    }`}
-                  >
-                    {outOfStock
-                      ? 'Out of stock'
-                      : maxed
-                      ? `Max reached (${product.stock})`
-                      : `${product.stock} in stock`}
-                  </span>
-                </div>
-
-                {/* CTA */}
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  disabled={!addable || outOfStock}
-                  className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-sm font-semibold transition-all duration-300 ease-out transform active:scale-95 ${
-                    outOfStock
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : maxed
-                      ? 'bg-amber-100 text-amber-600 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5'
-                  }`}
-                  style={!outOfStock && !maxed ? { backgroundColor: 'var(--blue-600)', color: 'var(--white)' } : {}}
-                >
-                  {!outOfStock && !maxed && <ShoppingCart className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />}
-                  {outOfStock ? 'Out of Stock' : maxed ? 'Max Stock' : 'Add to Cart'}
-                </button>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Success Popup */}
-      {showSuccess && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-3 bg-green-50 border border-green-200 rounded-lg shadow-lg px-4 py-3 animate-in slide-in-from-right duration-300 fade-in-0 zoom-in-95" style={{ backgroundColor: 'var(--green-50)', borderColor: 'var(--green-200)' }}>
-          <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full animate-bounce" style={{ backgroundColor: 'var(--green-100)' }}>
-            <Check className="w-4 h-4 text-green-600" style={{ color: 'var(--green-600)' }} />
-          </div>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="font-medium text-green-800 text-sm" style={{ color: 'var(--green-800)' }}>Added to cart!</p>
-            <p className="text-green-600 text-xs" style={{ color: 'var(--green-600)' }}>{lastAddedProduct}</p>
+            <h2 className="text-xl font-semibold text-gray-900">Products</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{PRODUCTS.length} items available</p>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-medium text-gray-400 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full">
+            <ShoppingCart className="w-3.5 h-3.5" />
+            {items.length > 0 ? `${items.reduce((n, i) => n + i.quantity, 0)} in cart` : 'Cart empty'}
           </div>
         </div>
-      )}
-    </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {PRODUCTS.map((product, index) => {
+            const qty        = getCartQty(product.id)
+            const addable    = canAdd(product)
+            const outOfStock = product.stock === 0
+            const maxed      = !addable && !outOfStock
+            const added      = justAdded === product.id
+            const imageUrl   = PRODUCT_IMAGES[product.id]
+
+            return (
+              <div
+                key={product.id}
+                className={`card group relative flex flex-col rounded-2xl border overflow-hidden card-enter ${
+                  outOfStock
+                    ? 'border-gray-100 bg-gray-50/60 opacity-60'
+                    : maxed
+                    ? 'border-amber-200 bg-amber-50/20'
+                    : 'border-gray-100 bg-white hover:border-blue-100 hover:shadow-lg'
+                }`}
+                style={{
+                  animationDelay: `${index * 45}ms`,
+                  transition: 'box-shadow 0.25s, border-color 0.25s',
+                }}
+              >
+
+                {/* Cart badge */}
+                {qty > 0 && (
+                  <div className="badge-pop absolute top-2.5 right-2.5 z-10 flex items-center gap-1 bg-blue-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow">
+                    <CheckCircle2 className="w-3 h-3" />
+                    {qty}
+                  </div>
+                )}
+
+                {/* Image */}
+                <div className={`relative h-40 flex items-center justify-center px-5 pt-5 pb-3 overflow-hidden ${
+                  outOfStock ? 'bg-gray-50' : 'bg-gradient-to-b from-gray-50 to-white'
+                }`}>
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={product.name}
+                      className="img-hover h-full w-full object-contain mix-blend-multiply"
+                      onError={(e) => { e.currentTarget.style.display = 'none' }}
+                    />
+                  ) : (
+                    <Package className="w-10 h-10 text-gray-200" />
+                  )}
+
+                  {/* Out of stock overlay */}
+                  {outOfStock && (
+                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                      <span className="text-xs font-semibold text-gray-400 bg-white border border-gray-200 px-2.5 py-1 rounded-full">
+                        Out of stock
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="flex flex-col flex-1 px-4 pt-3 pb-4 gap-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-800 text-sm leading-snug">{product.name}</h3>
+                    <p className="text-base font-bold text-gray-900 mt-1">
+                      KES {product.price.toLocaleString()}
+                    </p>
+                  </div>
+
+                  {/* Stock pill */}
+                  <div className={`self-start inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                    outOfStock
+                      ? 'bg-red-50 text-red-500'
+                      : maxed
+                      ? 'bg-amber-50 text-amber-600'
+                      : 'bg-green-50 text-green-600'
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      outOfStock ? 'bg-red-400' : maxed ? 'bg-amber-400' : 'bg-green-400'
+                    }`} />
+                    {outOfStock ? 'Out of stock' : maxed ? `Max (${product.stock})` : `${product.stock} left`}
+                  </div>
+
+                  {/* CTA */}
+                  <button
+                    onClick={() => handleAdd(product)}
+                    disabled={!addable || outOfStock}
+                    className={`btn-add w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold ${
+                      outOfStock
+                        ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                        : maxed
+                        ? 'bg-amber-50 text-amber-500 cursor-not-allowed'
+                        : added
+                        ? 'bg-green-500 text-white shadow-md shadow-green-100'
+                        : 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm hover:shadow-md'
+                    }`}
+                  >
+                    {added ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        Added!
+                      </>
+                    ) : outOfStock ? (
+                      'Unavailable'
+                    ) : maxed ? (
+                      'Max reached'
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4" />
+                        Add to Cart
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </>
   )
 }

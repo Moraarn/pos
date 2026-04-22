@@ -14,6 +14,7 @@ export default function POSPage() {
   const [currentView, setCurrentView] = useState<'pos' | 'history'>('pos')
   const [showReceipt, setShowReceipt] = useState(false)
   const [currentSale, setCurrentSale] = useState<Sale | null>(null)
+  const [showCheckout, setShowCheckout] = useState(false)
 
   const { sales } = useSalesStore()
 
@@ -28,6 +29,10 @@ export default function POSPage() {
   const handleCloseReceipt = () => {
     setShowReceipt(false)
     setCurrentSale(null)
+  }
+
+  const handleCheckoutToggle = (show: boolean) => {
+    setShowCheckout(show)
   }
 
   return (
@@ -107,8 +112,8 @@ export default function POSPage() {
             <div className="flex flex-col gap-5">
               {/* Make sidebar sticky so it stays visible while scrolling products */}
               <div className="sticky top-20 flex flex-col gap-5">
-                <Cart />
-                <Checkout onSaleComplete={handleSaleComplete} />
+                <Cart onCheckoutToggle={handleCheckoutToggle} />
+                {showCheckout && <Checkout onSaleComplete={handleSaleComplete} />}
               </div>
             </div>
 
