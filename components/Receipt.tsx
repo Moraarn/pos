@@ -93,7 +93,7 @@ export default function Receipt({ sale, onClose }: ReceiptProps) {
             </div>
             <div className="flex justify-between text-lg font-bold text-gray-800 pt-2 border-t" style={{ color: 'var(--gray-800)', borderTopColor: 'currentColor' }}>
               <span>TOTAL:</span>
-              <span className="text-blue-600" style={{ color: 'var(--blue-600)' }}>KES {sale.total.toLocaleString()}</span>
+              <span className="text-green-600" style={{ color: 'var(--green-600)' }}>KES {sale.total.toLocaleString()}</span>
             </div>
           </div>
 
@@ -107,7 +107,7 @@ export default function Receipt({ sale, onClose }: ReceiptProps) {
             
             <button
               onClick={onClose}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors" style={{ backgroundColor: 'var(--blue-600)', color: 'var(--white)' }}
+              className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors" style={{ backgroundColor: 'var(--green-600)', color: 'var(--white)' }}
             >
               Close Receipt
             </button>

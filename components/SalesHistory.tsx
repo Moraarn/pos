@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useSalesStore } from '@/store/useSalesStore'
+import { useTheme } from '@/lib/contexts/ThemeContext'
 import {
   Receipt, Trash2, ChevronDown, ChevronUp,
   TrendingUp, Banknote, Smartphone, CreditCard,
@@ -19,15 +20,15 @@ const PRODUCT_IMAGES: Record<string, string> = {
   "Lightning Cable": "https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MD818?wid=200&hei=200&fmt=png-alpha",
 }
 
-function PaymentBadge({ method }: { method: string }) {
-  const configs: Record<string, { icon: React.ReactNode; label: string; className: string }> = {
-    cash:  { icon: <Banknote className="w-3 h-3" />,   label: 'Cash',   className: 'bg-green-50 text-green-700 border-green-200' },
-    mpesa: { icon: <Smartphone className="w-3 h-3" />, label: 'M-Pesa', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-    card:  { icon: <CreditCard className="w-3 h-3" />, label: 'Card',   className: 'bg-purple-50 text-purple-700 border-purple-200' },
+function PaymentBadge({ method, theme }: { method: string; theme: 'light' | 'dark' }) {
+  const configs: Record<string, { icon: React.ReactNode; label: string; className: string; darkClassName: string }> = {
+    cash:  { icon: <Banknote className="w-3 h-3" />,   label: 'Cash',   className: 'bg-green-50 text-green-700 border-green-200', darkClassName: 'bg-green-900/30 text-green-400 border-green-700' },
+    mpesa: { icon: <Smartphone className="w-3 h-3" />, label: 'M-Pesa', className: 'bg-green-50 text-green-700 border-green-200', darkClassName: 'bg-green-900/30 text-green-400 border-green-700' },
+    card:  { icon: <CreditCard className="w-3 h-3" />, label: 'Card',   className: 'bg-purple-50 text-purple-700 border-purple-200', darkClassName: 'bg-purple-900/30 text-purple-400 border-purple-700' },
   }
   const c = configs[method] ?? configs.card
   return (
-    <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${c.className}`}>
+    <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${theme === 'dark' ? c.darkClassName : c.className}`}>
       {c.icon}{c.label}
     </span>
   )
@@ -36,6 +37,7 @@ function PaymentBadge({ method }: { method: string }) {
 export default function SalesHistory() {
   const { sales, clearSales } = useSalesStore()
   const [expandedSale, setExpandedSale] = useState<string | null>(null)
+  const { theme } = useTheme()
 
   const formatDate = (d: string) =>
     new Date(d).toLocaleString('en-KE', { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })
@@ -47,14 +49,14 @@ export default function SalesHistory() {
 
   if (sales.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-14 text-center">
+      <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl border shadow-sm p-14 text-center`}>
         <div className="flex flex-col items-center gap-3">
-          <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center">
-            <Receipt className="w-7 h-7 text-gray-200" />
+          <div className={`w-16 h-16 rounded-2xl ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-50'} flex items-center justify-center`}>
+            <Receipt className={`w-7 h-7 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-200'}`} />
           </div>
           <div>
-            <p className="font-semibold text-gray-700">No sales yet</p>
-            <p className="text-sm text-gray-400 mt-0.5">Complete your first sale to see it here</p>
+            <p className={`font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}>No sales yet</p>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} mt-0.5`}>Complete your first sale to see it here</p>
           </div>
         </div>
       </div>
@@ -68,38 +70,37 @@ export default function SalesHistory() {
       <div className="grid grid-cols-3 gap-4">
         {[
           { label: 'Total Revenue',  value: `KES ${totalRevenue.toLocaleString()}`, sub: 'All time', color: 'text-green-600', bg: 'bg-green-50', icon: <TrendingUp className="w-4 h-4 text-green-500" /> },
-          { label: 'Transactions',   value: sales.length,  sub: `${sales.length === 1 ? 'sale' : 'sales'} recorded`, color: 'text-blue-600', bg: 'bg-blue-50', icon: <Receipt className="w-4 h-4 text-blue-500" /> },
+          { label: 'Transactions',   value: sales.length,  sub: `${sales.length === 1 ? 'sale' : 'sales'} recorded`, color: 'text-green-600', bg: 'bg-green-50', icon: <Receipt className="w-4 h-4 text-green-500" /> },
           { label: 'Items Sold',     value: totalItems, sub: 'units total', color: 'text-purple-600', bg: 'bg-purple-50', icon: <Package className="w-4 h-4 text-purple-500" /> },
         ].map(stat => (
-          <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+          <div key={stat.label} className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl border shadow-sm px-5 py-4 flex items-center gap-4`}>
             <div className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center shrink-0`}>
               {stat.icon}
             </div>
             <div className="min-w-0">
               <p className={`text-lg font-bold ${stat.color} truncate`}>{stat.value}</p>
-              <p className="text-xs text-gray-400 truncate">{stat.label}</p>
+              <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} truncate`}>{stat.label}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Sales list */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-
+      <div className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl border shadow-sm overflow-hidden`}>
         {/* Header */}
-        <div className="flex justify-between items-center px-5 py-4 border-b border-gray-100">
+        <div className={`flex justify-between items-center px-5 py-4 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'}`}>
           <div className="flex items-center gap-2.5">
-            <Receipt className="w-4 h-4 text-gray-400" />
-            <h2 className="font-semibold text-gray-800 text-base">
+            <Receipt className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
+            <h2 className={`font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'} text-base`}>
               Recent Sales
             </h2>
-            <span className="text-xs font-medium bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+            <span className={`text-xs font-medium ${theme === 'dark' ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-500'} px-2 py-0.5 rounded-full`}>
               {sales.length}
             </span>
           </div>
           <button
             onClick={clearSales}
-            className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-red-500 transition-colors py-1 px-2 rounded-lg hover:bg-red-50"
+            className={`flex items-center gap-1.5 text-xs font-medium ${theme === 'dark' ? 'text-gray-400 hover:text-red-400 hover:bg-red-900/20' : 'text-gray-400 hover:text-red-500 hover:bg-red-50'} transition-colors py-1 px-2 rounded-lg`}
           >
             <Trash2 className="w-3.5 h-3.5" />
             Clear all
@@ -107,7 +108,7 @@ export default function SalesHistory() {
         </div>
 
         {/* Rows */}
-        <div className="divide-y divide-gray-50 max-h-[600px] overflow-y-auto">
+        <div className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-50'} max-h-[600px] overflow-y-auto`}>
           {sales.map((sale) => {
             const isOpen = expandedSale === sale.id
             const vat      = Math.round(sale.total * 0.16 / 1.16)
@@ -115,61 +116,60 @@ export default function SalesHistory() {
 
             return (
               <div key={sale.id}>
-
                 {/* Row */}
                 <button
                   onClick={() => toggle(sale.id)}
-                  className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50/60 transition-colors text-left group"
+                  className={`w-full flex items-center gap-4 px-5 py-3.5 ${theme === 'dark' ? 'hover:bg-gray-700/60' : 'hover:bg-gray-50/60'} transition-colors text-left group`}
                 >
                   {/* Receipt icon */}
-                  <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
-                    <Receipt className="w-4 h-4 text-gray-400" />
+                  <div className={`w-9 h-9 rounded-xl ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-100'} flex items-center justify-center shrink-0`}>
+                    <Receipt className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-gray-700 truncate font-mono">
+                      <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'} truncate font-mono`}>
                         {sale.id}
                       </span>
-                      <PaymentBadge method={sale.paymentMethod} />
+                      <PaymentBadge method={sale.paymentMethod} theme={theme} />
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5">{formatDate(sale.createdAt)}</p>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} mt-0.5`}>{formatDate(sale.createdAt)}</p>
                   </div>
 
                   {/* Amount */}
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-bold text-gray-800">KES {sale.total.toLocaleString()}</p>
-                    <p className="text-xs text-gray-400">{sale.items.length} {sale.items.length === 1 ? 'item' : 'items'}</p>
+                    <p className={`text-sm font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>KES {sale.total.toLocaleString()}</p>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>{sale.items.length} {sale.items.length === 1 ? 'item' : 'items'}</p>
                   </div>
 
                   {/* Chevron */}
-                  <div className="text-gray-300 group-hover:text-gray-400 transition-colors shrink-0">
+                  <div className={`${theme === 'dark' ? 'text-gray-500 group-hover:text-gray-400' : 'text-gray-300 group-hover:text-gray-400'} transition-colors shrink-0`}>
                     {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </div>
                 </button>
 
                 {/* Expanded */}
                 {isOpen && (
-                  <div className="mx-5 mb-4 rounded-xl border border-gray-100 overflow-hidden">
+                  <div className={`mx-5 mb-4 rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'} overflow-hidden`}>
 
                     {/* Item list with images */}
-                    <div className="divide-y divide-gray-50">
+                    <div className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-50'}`}>
                       {sale.items.map((item, i) => {
                         const img = PRODUCT_IMAGES[item.name]
                         return (
-                          <div key={i} className="flex items-center gap-3 px-4 py-3 bg-gray-50/40">
-                            <div className="w-10 h-10 rounded-lg bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                          <div key={i} className={`flex items-center gap-3 px-4 py-3 ${theme === 'dark' ? 'bg-gray-700/40' : 'bg-gray-50/40'}`}>
+                            <div className={`w-10 h-10 rounded-lg ${theme === 'dark' ? 'bg-gray-600 border-gray-500' : 'bg-white border-gray-100'} flex items-center justify-center shrink-0 overflow-hidden`}>
                               {img
-                                ? <img src={img} alt={item.name} className="w-full h-full object-contain mix-blend-multiply p-1" />
-                                : <Package className="w-4 h-4 text-gray-300" />
+                                ? <img src={img} alt={item.name} className={`w-full h-full object-contain ${theme === 'dark' ? 'mix-blend-lighten' : 'mix-blend-multiply'} p-1`} />
+                                : <Package className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-300'}`} />
                               }
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-700 truncate">{item.name}</p>
-                              <p className="text-xs text-gray-400">KES {item.price.toLocaleString()} × {item.quantity}</p>
+                              <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'} truncate`}>{item.name}</p>
+                              <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>KES {item.price.toLocaleString()} × {item.quantity}</p>
                             </div>
-                            <p className="text-sm font-semibold text-gray-700 shrink-0">
+                            <p className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'} shrink-0`}>
                               KES {(item.price * item.quantity).toLocaleString()}
                             </p>
                           </div>
@@ -178,16 +178,16 @@ export default function SalesHistory() {
                     </div>
 
                     {/* Totals */}
-                    <div className="border-t border-gray-100 bg-white px-4 py-3 space-y-1.5">
-                      <div className="flex justify-between text-xs text-gray-400">
+                    <div className={`border-t ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'border-gray-100 bg-white'} px-4 py-3 space-y-1.5`}>
+                      <div className={`flex justify-between text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
                         <span>Subtotal</span><span>KES {subtotal.toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between text-xs text-gray-400">
+                      <div className={`flex justify-between text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
                         <span>VAT (16%)</span><span>KES {vat.toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between text-sm font-bold text-gray-800 pt-1.5 border-t border-gray-100">
+                      <div className={`flex justify-between text-sm font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'} pt-1.5 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'}`}>
                         <span>Total</span>
-                        <span className="text-blue-600">KES {sale.total.toLocaleString()}</span>
+                        <span className="text-green-600">KES {sale.total.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
