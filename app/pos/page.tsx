@@ -3,12 +3,11 @@
 import { useState } from 'react'
 import { useSalesStore } from '@/store/useSalesStore'
 import { Sale } from '@/types'
-import { ShoppingCart, History, Zap } from 'lucide-react'
-import Receipt from '@/Components/Receipt'
-import SalesHistory from '@/Components/SalesHistory'
+import { ShoppingCart, History, Zap, Receipt } from 'lucide-react'
+import Cart from '@/Components/cart'
 import Checkout from '@/Components/Checkout'
 import ProductList from '@/Components/ProductList'
-import Cart from '@/Components/Cart'
+import SalesHistory from '@/Components/SalesHistory'
 
 export default function POSPage() {
   const [currentView, setCurrentView] = useState<'pos' | 'history'>('pos')
